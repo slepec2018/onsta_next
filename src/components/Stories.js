@@ -17,7 +17,9 @@ export default function Stories() {
   }, []);
   
   return (
-    <div>
+    <div
+      className="flex space-x-2 p-6 bg-white mt-8 border-gray-200 border-1 overflow-x-scroll rounded-sm scrollbar-none"
+    >
       {storyUsers && (
         storyUsers.map(user => (
           <Story
