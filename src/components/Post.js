@@ -1,4 +1,4 @@
-import { DotsHorizontalIcon, HeartIcon, ChatIcon, BookmarkIcon } from "@heroicons/react/outline"
+import { DotsHorizontalIcon, HeartIcon, ChatIcon, BookmarkIcon, EmojiHappyIcon } from "@heroicons/react/outline"
 
 export default function Post({ img, userImg, caption, userName, id }) {
   return (
@@ -43,6 +43,33 @@ export default function Post({ img, userImg, caption, userName, id }) {
           className="btn"
         />
       </div>
+      <p
+        className="p-5 truncate"
+      >
+        <span
+          className="font-bold mr-2"
+        >
+          {userName}
+        </span>
+        {caption}
+      </p>
+      <form
+        className="flex items-center p-4"
+      >
+        <EmojiHappyIcon
+          className="h-7"
+        />
+        <input
+          type="text"
+          placeholder="Enter your comment..."
+          className="border-none flex-1 focus:ring-0"
+        />
+        <button
+          className="text-blue-400 font-bold"
+        >
+          Post
+        </button>
+      </form>
     </div>
   )
 }
