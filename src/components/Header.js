@@ -15,8 +15,10 @@ export default function Header() {
         >
           <Image
             src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2a/Instagram_logo.svg/1024px-Instagram_logo.svg.png"
-            layout="fill"
+            fill
             className="object-contain"
+            alt="onsta"
+            priority={true}
           />
         </div>
         <div
@@ -24,8 +26,9 @@ export default function Header() {
         >
           <Image
             src="https://upload.wikimedia.org/wikipedia/commons/9/95/Instagram_logo_2022.svg"
-            layout="fill"
+            fill
             className="object-contain"
+            alt="onsta"
           />
         </div>
 
