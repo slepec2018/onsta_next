@@ -1,10 +1,14 @@
+import { useSession, signOut } from "next-auth/react";
+
 export default function MiniProfile() {
+  const { data: session } = useSession();
+
   return (
     <div
       className="flex items-center justify-between mt-14 ml-10"
     >
       <img
-        src="https://avatars.dzeninfra.ru/get-zen_doc/1626348/pub_5e2d90bae6e8ef00ad1aa039_5e2d9c90028d6800b09ba9e0/scale_1200"
+        src={session?.user.image}
         alt="user-image"
         className="h-16 rounded-full border p-[2px]"
       />
@@ -14,7 +18,7 @@ export default function MiniProfile() {
         <h2
           className="font-bold"
         >
-          codewithme
+          {session?.user.username}
         </h2>
         <h3
          className="text-sm text-gray-400"
@@ -24,6 +28,7 @@ export default function MiniProfile() {
       </div>
       <button
         className="font-semibold text-blue-400 text-sm"
+        onClick={signOut}
       >
         Sign out
       </button>
