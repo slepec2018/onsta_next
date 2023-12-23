@@ -1,20 +1,36 @@
 import { useState, useEffect } from "react";
 import Moment from "react-moment";
 import { DotsHorizontalIcon, HeartIcon, ChatIcon, BookmarkIcon, EmojiHappyIcon } from "@heroicons/react/outline";
+import { HeartIcon as HeartIconFilled } from "@heroicons/react/solid";
 import { useSession } from "next-auth/react";
-import { addDoc, collection, onSnapshot, orderBy, query, serverTimestamp } from "firebase/firestore";
+import { addDoc, collection, deleteDoc, doc, onSnapshot, orderBy, query, serverTimestamp, setDoc } from "firebase/firestore";
 import { db } from "../../firebase";
 
 export default function Post({ img, userImg, caption, userName, id }) {
   const { data: session } = useSession();
   const [comment, setComment] = useState("");
   const [comments, setComments] = useState([]);
+  const [likes, setLikes] = useState([]);
+  const [hasLiked, setHasLiked] = useState(false);
 
   useEffect(() => {
     const unsubscribe = onSnapshot(query(collection(db, "posts", id, "comments"), orderBy("timestamp", "desc")), (snapshot) => {
       setComments(snapshot.docs);
     });
   }, [db, id]);
+
+  useEffect(() => {
+    const unsubscribe = onSnapshot(
+      collection(db, "posts", id, "likes"),
+      (snapshot) => setLikes(snapshot.docs)
+    );
+  }, [db]);
+
+  useEffect(() => {
+    setHasLiked(
+      likes.findIndex(like => like.id === session?.user.uid) !== -1
+    );
+  }, [likes]);
 
   async function sendComment(event) {
     event.preventDefault();
@@ -27,7 +43,17 @@ export default function Post({ img, userImg, caption, userName, id }) {
       userImage: session.user.image,
       timestamp: serverTimestamp()
     })
-  } 
+  }
+
+  async function likePost() {
+    if (hasLiked) {
+      await deleteDoc(doc(db, "posts", id, "likes", session.user.uid))
+    } else {
+      await setDoc(doc(db, "posts", id, "likes", session.user.uid), {
+        username: session.user.username,
+      })
+    }
+  }
 
   return (
     <div
@@ -61,9 +87,17 @@ export default function Post({ img, userImg, caption, userName, id }) {
           <div
             className="flex space-x-4"
           >
-            <HeartIcon
-              className="btn"
-            />
+            {hasLiked ? (
+              <HeartIconFilled
+                className="text-red-400 btn"
+                onClick={likePost}
+              />
+            ) : (
+              <HeartIcon
+                className="btn"
+                onClick={likePost}
+              />
+            )}
             <ChatIcon
               className="btn"
             />
