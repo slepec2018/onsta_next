@@ -4,10 +4,12 @@ import { HomeIcon } from "@heroicons/react/solid";
 import { useSession, signIn, signOut } from "next-auth/react";
 import { useRecoilState } from 'recoil';
 import { modalState } from "../../atom/modalAtom";
+import { useRouter } from "next/router";
 
 export default function Header() {
   const { data: session } = useSession();
   const [open, setOpen] = useRecoilState(modalState);
+  const router = useRouter();
 
   return (
     <div
@@ -25,6 +27,7 @@ export default function Header() {
             className="object-contain"
             alt="onsta"
             priority={true}
+            onClick={() => router.push("/")}
           />
         </div>
         <div
@@ -35,6 +38,7 @@ export default function Header() {
             fill
             className="object-contain"
             alt="onsta"
+            onClick={() => router.push("/")}
           />
         </div>
 
@@ -61,6 +65,7 @@ export default function Header() {
         >
           <HomeIcon
             className="hidden md:inline-flex h-6 cursor-pointer hover:scale-125 transition-transform duration-200 ease-out"
+            onClick={() => router.push("/")}
           />
           {session ? (
             <>

@@ -1,6 +1,9 @@
-import { DotsHorizontalIcon, HeartIcon, ChatIcon, BookmarkIcon, EmojiHappyIcon } from "@heroicons/react/outline"
+import { DotsHorizontalIcon, HeartIcon, ChatIcon, BookmarkIcon, EmojiHappyIcon } from "@heroicons/react/outline";
+import { useSession } from "next-auth/react";
 
 export default function Post({ img, userImg, caption, userName, id }) {
+  const { data: session } = useSession();
+
   return (
     <div
       className="bg-white my-7 border rounded-md "
@@ -26,23 +29,25 @@ export default function Post({ img, userImg, caption, userName, id }) {
         src={img}
         className="object-cover w-full"
       />
-      <div
-        className="flex justify-between px-4 pt-4"
-      >
+      {session && (
         <div
-          className="flex space-x-4"
+          className="flex justify-between px-4 pt-4"
         >
-          <HeartIcon
-            className="btn"
-          />
-          <ChatIcon
+          <div
+            className="flex space-x-4"
+          >
+            <HeartIcon
+              className="btn"
+            />
+            <ChatIcon
+              className="btn"
+            />
+          </div>
+          <BookmarkIcon
             className="btn"
           />
         </div>
-        <BookmarkIcon
-          className="btn"
-        />
-      </div>
+      )}
       <p
         className="p-5 truncate"
       >
@@ -53,23 +58,25 @@ export default function Post({ img, userImg, caption, userName, id }) {
         </span>
         {caption}
       </p>
-      <form
-        className="flex items-center p-4"
-      >
-        <EmojiHappyIcon
-          className="h-7"
-        />
-        <input
-          type="text"
-          placeholder="Enter your comment..."
-          className="border-none flex-1 focus:ring-0"
-        />
-        <button
-          className="text-blue-400 font-bold"
+      {session && (
+        <form
+          className="flex items-center p-4"
         >
-          Post
-        </button>
-      </form>
+          <EmojiHappyIcon
+            className="h-7"
+          />
+          <input
+            type="text"
+            placeholder="Enter your comment..."
+            className="border-none flex-1 focus:ring-0"
+          />
+          <button
+            className="text-blue-400 font-bold"
+          >
+            Post
+          </button>
+        </form>
+      )}
     </div>
   )
 }
