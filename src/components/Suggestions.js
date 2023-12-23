@@ -36,6 +36,7 @@ export default function Suggestions() {
       </div>
       {suggestions.map(suggestion => (
         <div
+          key={suggestion.id}
           className="flex items-center justify-between mt-3"
         >
           <img
