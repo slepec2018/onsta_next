@@ -130,6 +130,7 @@ export default function Post({ img, userImg, caption, userName, id }) {
         >
           {comments.map((comment) => (
             <div
+              key={comment.data().id}
               className="flex items-center space-x-2 mb-2"
             >
               <img
