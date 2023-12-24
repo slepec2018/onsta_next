@@ -1,6 +1,7 @@
 import NextAuth from "next-auth"
 import GoogleProvider from "next-auth/providers/google"
 export const authOptions = {
+  baseUrl: process.env.NEXTAUTH_URL || "http://localhost:3000",
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID,

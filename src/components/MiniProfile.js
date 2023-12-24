@@ -1,14 +1,22 @@
-import { useSession, signOut } from "next-auth/react";
+import { getAuth, signOut } from "firebase/auth";
+import { useRecoilState } from "recoil"
+import { userState } from "../../atom/userAtom"
 
 export default function MiniProfile() {
-  const { data: session } = useSession();
+  const [currentUser, setCurrentUser] = useRecoilState(userState);
+  const auth = getAuth();
+
+  function onSignOut() {
+    signOut(auth);
+    setCurrentUser(null);
+  }
 
   return (
     <div
       className="flex items-center justify-between mt-14 ml-10"
     >
       <img
-        src={session?.user.image}
+        src={currentUser?.userImg}
         alt="user-image"
         className="h-16 rounded-full border p-[2px]"
       />
@@ -18,7 +26,7 @@ export default function MiniProfile() {
         <h2
           className="font-bold"
         >
-          {session?.user.username}
+          {currentUser?.username}
         </h2>
         <h3
          className="text-sm text-gray-400"
@@ -28,7 +36,7 @@ export default function MiniProfile() {
       </div>
       <button
         className="font-semibold text-blue-400 text-sm"
-        onClick={signOut}
+        onClick={onSignOut}
       >
         Sign out
       </button>

@@ -2,16 +2,17 @@ import { useState, useEffect } from "react";
 import Moment from "react-moment";
 import { DotsHorizontalIcon, HeartIcon, ChatIcon, BookmarkIcon, EmojiHappyIcon } from "@heroicons/react/outline";
 import { HeartIcon as HeartIconFilled } from "@heroicons/react/solid";
-import { useSession } from "next-auth/react";
 import { addDoc, collection, deleteDoc, doc, onSnapshot, orderBy, query, serverTimestamp, setDoc } from "firebase/firestore";
 import { db } from "../../firebase";
+import { useRecoilState } from "recoil";
+import { userState } from "../../atom/userAtom";
 
 export default function Post({ img, userImg, caption, userName, id }) {
-  const { data: session } = useSession();
   const [comment, setComment] = useState("");
   const [comments, setComments] = useState([]);
   const [likes, setLikes] = useState([]);
   const [hasLiked, setHasLiked] = useState(false);
+  const [currentUser] = useRecoilState(userState);
 
   useEffect(() => {
     const unsubscribe = onSnapshot(query(collection(db, "posts", id, "comments"), orderBy("timestamp", "desc")), (snapshot) => {
@@ -28,7 +29,7 @@ export default function Post({ img, userImg, caption, userName, id }) {
 
   useEffect(() => {
     setHasLiked(
-      likes.findIndex(like => like.id === session?.user.uid) !== -1
+      likes.findIndex(like => like.id === currentUser?.uid) !== -1
     );
   }, [likes]);
 
@@ -39,18 +40,18 @@ export default function Post({ img, userImg, caption, userName, id }) {
 
     await addDoc(collection(db, "posts", id, "comments"), {
       comment: commentToSend,
-      username: session.user.username,
-      userImage: session.user.image,
+      username: currentUser?.username,
+      userImage: currentUser?.userImg,
       timestamp: serverTimestamp()
     })
   }
 
   async function likePost() {
     if (hasLiked) {
-      await deleteDoc(doc(db, "posts", id, "likes", session.user.uid))
+      await deleteDoc(doc(db, "posts", id, "likes", currentUser?.uid))
     } else {
-      await setDoc(doc(db, "posts", id, "likes", session.user.uid), {
-        username: session.user.username,
+      await setDoc(doc(db, "posts", id, "likes", currentUser?.uid), {
+        username: currentUser?.username,
       })
     }
   }
@@ -80,7 +81,7 @@ export default function Post({ img, userImg, caption, userName, id }) {
         src={img}
         className="object-cover w-full"
       />
-      {session && (
+      {currentUser && (
         <div
           className="flex justify-between px-4 pt-4"
         >
@@ -157,7 +158,7 @@ export default function Post({ img, userImg, caption, userName, id }) {
           ))}
         </div>
       )}
-      {session && (
+      {currentUser && (
         <form
           className="flex items-center p-4"
         >

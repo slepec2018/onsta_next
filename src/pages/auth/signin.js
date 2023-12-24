@@ -1,7 +1,40 @@
-import { getProviders, signIn } from "next-auth/react";
+import { getAuth, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import { db } from "../../../firebase";
 import Header from "@/components/Header";
+import { doc, getDoc, serverTimestamp, setDoc } from "firebase/firestore";
+import { useRouter } from "next/router";
 
-export default function signin({providers}) {
+export default function Signin() {
+  const router = useRouter();
+
+  async function onGoogleClick() {
+    try {
+      const auth = getAuth();
+      const provider = new GoogleAuthProvider();
+
+      await signInWithPopup(auth, provider);
+      const user = auth.currentUser.providerData[0];
+
+      const docRef = doc(db, "users", user.uid);
+      const docSnap = await getDoc(docRef);
+
+      if (!docSnap.exists()) {
+        await setDoc(docRef, {
+          name: user.displayName,
+          email: user.email,
+          userImg: user.photoURL,
+          uid: user.uid,
+          timestamp: serverTimestamp(),
+          username: user.displayName.split(" ").join("").toLocaleLowerCase(),
+        })
+      }
+
+      router.push("/");
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   return (
     <>
       <Header />
@@ -16,39 +49,28 @@ export default function signin({providers}) {
         <div
           className=""
         >
-          {Object.values(providers).map((provider) => (
-            <div
-              key={provider.name}
-              className="flex flex-col items-center"
+          <div
+            className="flex flex-col items-center"
+          >
+            <img
+              src="https://www.comopegarmina.com.br/wp-content/uploads/2019/01/instagram-logo-2.png"
+              alt="onsta"
+              className="w-32 object-cover"
+            />
+            <p
+              className="text-sm italic my-10 text-center"
             >
-              <img
-                src="https://www.comopegarmina.com.br/wp-content/uploads/2019/01/instagram-logo-2.png"
-                alt="onsta"
-                className="w-32 object-cover"
-              />
-              <p
-                className="text-sm italic my-10 text-center"
-              >
-                This app is created for learning purpose
-              </p>
-              <button
-                onClick={() => signIn(provider.id, {callbackUrl: "/"})}
-                className="bg-red-400 rounded-lg p-3 text-white hover:bg-red-500"
-              >
-                Sign in with {provider.name}
-              </button>
-            </div>
-          ))}
+              This app is created for learning purpose
+            </p>
+            <button
+              onClick={onGoogleClick}
+              className="bg-red-400 rounded-lg p-3 text-white hover:bg-red-500"
+            >
+              Sign in with Google
+            </button>
+          </div>
         </div>
       </div>
     </>
   )
-}
-
-export async function getServerSideProps(context) {
-  const providers = await getProviders();
-
-  return {
-    props: {providers}
-  }
 }
